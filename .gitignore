@@ -8,7 +8,13 @@ wheels/
 
 # --- Virtual environments ---
 .venv/
-.env/
+
+# --- Environment & secrets ---
+.env
+.env.*
+*.env
+*.secret
+secrets.json
 
 # --- UV cache ---
 .uv/

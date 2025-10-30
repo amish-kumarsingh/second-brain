@@ -80,3 +80,37 @@ def query_notes(query: str, n_results: int = 3):
         print(doc[:400] + "\n---")
 
     return results
+
+
+# --- RAG retrieval ---
+def rag_retrieve(query: str, n_results: int = 3) -> str:
+    """
+    Retrieve top-n relevant chunks from ChromaDB and prepare a clean context block
+    for use in RAG pipelines (Retrieval-Augmented Generation).
+    """
+    query_embedding = embed_text(query)
+
+    results = collection.query(
+        query_embeddings=[query_embedding],
+        n_results=n_results
+    )
+
+    if not results["documents"] or not results["documents"][0]:
+        return "No relevant information found in your knowledge base."
+
+    # Combine retrieved documents into a readable context string
+    context_blocks = []
+    for doc, meta in zip(results["documents"][0], results["metadatas"][0]):
+        filename = meta.get("filename", "Unknown file")
+        chunk_info = f"[Source: {filename}]"
+        context_blocks.append(f"{chunk_info}\n{doc.strip()}\n")
+
+    context = "\n---\n".join(context_blocks)
+
+    final_context = f"""Here are some relevant notes from your knowledge base:
+    
+                    {context}
+                    """
+
+    return final_context
+
