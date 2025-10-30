@@ -1,0 +1,36 @@
+# --- Python build and cache ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+wheels/
+
+# --- Virtual environments ---
+.venv/
+.env/
+
+# --- UV cache ---
+.uv/
+.uv_cache/
+
+# --- ChromaDB persistent store ---
+.chromadb/
+
+# --- SentenceTransformer / HuggingFace caches ---
+/home*/  # sometimes SentenceTransformer creates this
+.cache/
+**/sentence_transformers/
+
+# --- Data and test artifacts ---
+data/
+!data/README.md  # keep an empty placeholder if needed
+
+# --- Logs and temp files ---
+*.log
+*.tmp
+*.bak
+
+# --- OS files ---
+.DS_Store
+Thumbs.db
