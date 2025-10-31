@@ -46,5 +46,49 @@
   {
     "query": "where i am planning to go",
     "response": "Based on our previous conversation, you are planning to go to Iceland."
+  },
+  {
+    "query": "What are learning goals?",
+    "response": "Based on the note \"Learning Goals for the Quarter\", your learning goals are:\n\n1.  Deep dive into LangChain and Pydantic AI for structured agents.\n2.  Understand the basics of vector databases (Chroma, Milvus, Pinecone).\n3.  Build a simple RAG pipeline from scratch.\n4.  Explore observability tools like OpenTelemetry.\n5.  Participate in at least one hackathon or coding event."
+  },
+  {
+    "query": "test query",
+    "response": "test response"
+  },
+  {
+    "query": "What are my learning goals?",
+    "response": "Based on the note \"Learning Goals for the Quarter\", your learning goals are:\n\n1.  Deep dive into LangChain and Pydantic AI for structured agents.\n2.  Understand the basics of vector databases (Chroma, Milvus, Pinecone).\n3.  Build a simple RAG pipeline from scratch.\n4.  Explore observability tools like OpenTelemetry.\n5.  Participate in at least one hackathon or coding event."
+  },
+  {
+    "query": "Suggest me some travel ideas",
+    "response": "Based on the note \"Travel Ideas for 2025\", here are some travel ideas:\n\n1.  Japan \u2013 Cherry blossom season in Kyoto.\n2.  Italy \u2013 Explore Tuscany and Amalfi Coast.\n3.  Iceland \u2013 Northern Lights and Blue Lagoon.\n4.  Vietnam \u2013 Food, culture, and scenic landscapes.\n5.  Himachal \u2013 Short local trek in spring."
+  },
+  {
+    "query": "What project ideas do I have?",
+    "response": "Based on the note \"Project Ideas for Personal Portfolio\", your project ideas are:\n\n1.  AI-powered Second Brain with persistent memory.\n2.  DevOps dashboard integrating metrics and alerts.\n3.  Chess tutor app using reinforcement learning.\n4.  Recipe recommendation system using embeddings.\n5.  Daily journal summarizer using LLMs and sentiment analysis."
+  },
+  {
+    "query": "tell me something interesting",
+    "response": "Please specify a topic. I can provide information on your project ideas or travel plans."
+  },
+  {
+    "query": "Based on my notes, what should I focus on this quarter?",
+    "response": "Based on your notes, you have two main areas with actionable items: Personal Projects and Finance. The productivity tips can be applied to any goal you choose.\n\n**1. Personal Portfolio Projects:**\nFrom your \"Project Ideas for Personal Portfolio\" note, you could focus on one of these this quarter:\n*   AI-powered Second Brain with persistent memory.\n*   DevOps dashboard integrating metrics and alerts.\n*   Chess tutor app using reinforcement learning.\n*   Recipe recommendation system using embeddings.\n*   Daily journal summarizer using LLMs and sentiment analysis.\n\n**2. Financial Goals:**\nFrom your \"Smart Finance Tips\" note, you could focus on:\n*   Building an emergency fund.\n*   Setting up a budget and tracking spending.\n*   Automating savings and investments."
+  },
+  {
+    "query": "tell me something interesting",
+    "response": "Based on your note \"Travel Ideas for 2025,\" you are considering a trip to Japan for the cherry blossom season.\n\nIn Japanese culture, the cherry blossoms, or 'sakura', are a significant symbol representing the beautiful but transient nature of life."
+  },
+  {
+    "query": "Suggest me some travel ideas",
+    "response": "Based on your note \"Travel Ideas for 2025,\" here are your suggestions:\n\n*   Japan for the cherry blossom season in Kyoto.\n*   Italy to explore Tuscany and the Amalfi Coast.\n*   Iceland for the Northern Lights and Blue Lagoon.\n*   Vietnam for its food, culture, and scenic landscapes.\n*   Himachal for a short local trek in the spring."
+  },
+  {
+    "query": "What are my learning goals?",
+    "response": "Based on your note \"Learning Goals for the Quarter,\" your goals are:\n\n*   Deep dive into LangChain and Pydantic AI for structured agents.\n*   Understand the basics of vector databases (Chroma, Milvus, Pinecone).\n*   Build a simple RAG pipeline from scratch.\n*   Explore observability tools like OpenTelemetry.\n*   Participate in at least one hackathon or coding event."
+  },
+  {
+    "query": "Suggest me some travel ideas",
+    "response": "Based on your note \"Travel Ideas for 2025,\" here are your suggestions:\n\n*   Japan for the cherry blossom season in Kyoto.\n*   Italy to explore Tuscany and the Amalfi Coast.\n*   Iceland for the Northern Lights and Blue Lagoon.\n*   Vietnam for its food, culture, and scenic landscapes.\n*   Himachal for a short local trek in the spring."
   }
 ]
