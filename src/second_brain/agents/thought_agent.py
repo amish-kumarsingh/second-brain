@@ -1,7 +1,7 @@
 from pydantic_ai import Agent
 from second_brain.agents.ingestor import RAGManager
 from second_brain.agents.memory_manager import MemoryManager
-from second_brain.utils import get_tracer
+from second_brain.utils import get_tracer, get_guard
 from opentelemetry.trace import Status, StatusCode
 import os
 from dotenv import load_dotenv
@@ -27,16 +27,25 @@ class ThoughtAgent:
         self.agent = Agent(model=LLM_MODEL, system_prompt=system_prompt)
         self.memory = MemoryManager()
         self.rag_manager = RAGManager()
+        self.pii_guard = get_guard()
 
     def run(self, user_prompt: str):
-        """Handles RAG retrieval, memory recall, reasoning, and memory storage."""
+        """Handles RAG retrieval, memory recall, reasoning, and memory storage.
+        All inputs and outputs are sanitized for PII before processing.
+        """
         with tracer.start_as_current_span("thought_agent.run") as span:
-            span.set_attribute("user_prompt", user_prompt[:100])  # Limit length
+            # Sanitize user prompt first
+            sanitized_prompt = self.pii_guard.sanitize(user_prompt)
+            span.set_attribute("user_prompt", sanitized_prompt[:100])  # Limit length
+            span.set_attribute("pii_guard_enabled", self.pii_guard.enabled)
             
             try:
                 print("\n🔍 Retrieving relevant context from knowledge base...")
                 with tracer.start_as_current_span("rag_retrieval") as rag_span:
-                    rag_context = self.rag_manager.rag_retrieve(user_prompt)
+                    # RAG retrieval uses sanitized prompt
+                    rag_context = self.rag_manager.rag_retrieve(sanitized_prompt)
+                    # Sanitize RAG context as it may contain PII from stored documents
+                    rag_context = self.pii_guard.sanitize(rag_context)
                     rag_span.set_attribute("context_length", len(rag_context))
 
                 print("\n🧠 Fetching past memory context...")
@@ -50,7 +59,11 @@ class ThoughtAgent:
                         )
                     else:
                         memory_context = "No previous memory yet."
+                    
+                    # Memory context is already sanitized (stored sanitized), but sanitize again for safety
+                    memory_context = self.pii_guard.sanitize(memory_context)
 
+                # All inputs are sanitized before sending to LLM
                 combined_input = f"""
                 Memory Context:
                 {memory_context}
@@ -59,7 +72,7 @@ class ThoughtAgent:
                 {rag_context}
 
                 User Query:
-                {user_prompt}
+                {sanitized_prompt}
                 """
 
                 print("\n🤔 Thinking based on memory and retrieved knowledge...\n")
@@ -67,11 +80,15 @@ class ThoughtAgent:
                     llm_span.set_attribute("model", LLM_MODEL)
                     response = self.agent.run_sync(combined_input)
                     answer = response.output
+                    # Sanitize LLM output before returning (LLM might include PII)
+                    answer = self.pii_guard.sanitize(answer)
                     llm_span.set_attribute("response_length", len(answer))
 
-                # Store new memory
+                # Store new memory (memory manager will sanitize again, but that's okay)
                 with tracer.start_as_current_span("memory_store") as store_span:
-                    self.memory.add_entry(user_prompt, answer)
+                    # Use original user_prompt for storage (will be sanitized by memory manager)
+                    # This ensures we store what the user actually said (sanitized)
+                    self.memory.add_entry(sanitized_prompt, answer)
                     store_span.set_attribute("memory_stored", True)
 
                 span.set_status(Status(StatusCode.OK))

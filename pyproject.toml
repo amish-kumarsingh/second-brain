@@ -19,6 +19,7 @@ dependencies = [
     "pydantic-ai>=1.9.0",
     "python-dotenv>=1.2.1",
     "sentence-transformers>=5.1.2",
+    "guardrails-ai>=0.1.8",
 ]
 
 [project.scripts]

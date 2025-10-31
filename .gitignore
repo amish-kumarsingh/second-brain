@@ -33,6 +33,10 @@ secrets.json
 data/
 !data/README.md  # keep an empty placeholder if needed
 
+# --- Memory storage ---
+**/memory/*.json
+src/second_brain/memory/memory_data.json
+
 # --- Logs and temp files ---
 *.log
 *.tmp
