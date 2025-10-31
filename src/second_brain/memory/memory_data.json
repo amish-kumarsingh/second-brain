@@ -1,0 +1,50 @@
+[
+  {
+    "query": "what are my learning goals",
+    "response": "Based on the note \"Learning Goals for the Quarter,\" your learning goals are:\n\n1.  Deep dive into LangChain and Pydantic AI for structured agents.\n2.  Understand basics of vector databases (Chroma, Milvus, Pinecone).\n3.  Build a simple RAG pipeline from scratch.\n4.  Explore observability tools like OpenTelemetry.\n5.  Participate in at least one hackathon or coding event."
+  },
+  {
+    "query": "what was the last question i asked you",
+    "response": "Your last question was: \"what are my learning goals\""
+  },
+  {
+    "query": "my name is amish kumar singh",
+    "response": "Noted. The name Amish Kumar Singh is not found in the provided knowledge base."
+  },
+  {
+    "query": "my name is amish kumar singh and i am a software developer. remember this information",
+    "response": "Noted. I will remember that your name is Amish Kumar Singh and you are a software developer."
+  },
+  {
+    "query": "what is my name and my profession",
+    "response": "Based on our previous conversation, your name is Amish Kumar Singh and you are a software developer."
+  },
+  {
+    "query": "suggest me some travel ideas",
+    "response": "Based on the knowledge base, here are some travel ideas for 2025:\n\n1.  **Japan**: See the cherry blossoms in Kyoto. A 10-day plan covering Tokyo, Kyoto, and Osaka is available.\n2.  **Italy**: Explore Tuscany and the Amalfi Coast.\n3.  **Iceland**: View the Northern Lights and visit the Blue Lagoon.\n4.  **Vietnam**: Experience the food, culture, and landscapes.\n5.  **Himachal**: Take a short local trek in the spring."
+  },
+  {
+    "query": "based on my previous encounter, tell me where i am planning to go",
+    "response": "Based on our last conversation, you asked for travel ideas, and I suggested Japan, Italy, Iceland, Vietnam, and Himachal. You have not specified a destination."
+  },
+  {
+    "query": "okay so lets plan to visit italy. suggest me some good places to go",
+    "response": "Based on the knowledge base, the recommended places to explore in Italy are Tuscany and the Amalfi Coast."
+  },
+  {
+    "query": "okay where else can i go",
+    "response": "Based on the initial list of travel ideas, you could also consider:\n\n1.  **Japan**: To see the cherry blossoms in Kyoto.\n2.  **Iceland**: To view the Northern Lights and visit the Blue Lagoon.\n3.  **Vietnam**: To experience the food, culture, and landscapes.\n4.  **Himachal**: For a short local trek in the spring."
+  },
+  {
+    "query": "lets go with iceland.",
+    "response": "Based on the knowledge base, the recommended activities for Iceland are viewing the Northern Lights and visiting the Blue Lagoon."
+  },
+  {
+    "query": "where i am planning to go. check from our previous conversation",
+    "response": "Based on our previous conversation, you are planning to go to Iceland."
+  },
+  {
+    "query": "where i am planning to go",
+    "response": "Based on our previous conversation, you are planning to go to Iceland."
+  }
+]

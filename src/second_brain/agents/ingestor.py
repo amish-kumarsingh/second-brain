@@ -3,114 +3,111 @@ from sentence_transformers import SentenceTransformer
 import chromadb
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-# --- Global model and client setup ---
-client = chromadb.PersistentClient(path=".chromadb")
-collection = client.get_or_create_collection(name="notes")
-model = SentenceTransformer("all-MiniLM-L6-v2")
 
-# --- Helper for embedding ---
-def embed_text(text: str):
-    return model.encode(text).tolist()
+class RAGManager:
+    """Handles ingestion, retrieval, and querying of notes using ChromaDB + embeddings."""
 
-# --- Ingest logic with chunking ---
-def ingest_folder(folder_path: str = "data/notes"):
-    folder = Path(folder_path)
-    splitter = RecursiveCharacterTextSplitter(
-        chunk_size=500,
-        chunk_overlap=50,
-        separators=["\n\n", "\n", ".", " ", ""]
-    )
+    def __init__(self, db_path: str = ".chromadb", collection_name: str = "notes"):
+        self.client = chromadb.PersistentClient(path=db_path)
+        self.collection = self.client.get_or_create_collection(name=collection_name)
+        self.model = SentenceTransformer("all-MiniLM-L6-v2")
+        self.text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=500,
+            chunk_overlap=50,
+            separators=["\n\n", "\n", ".", " ", ""]
+        )
 
-    for file_path in folder.glob("*.txt"):
-        with open(file_path, "r", encoding="utf-8") as f:
-            content = f.read()
+    # --- Helper ---
+    def embed_text(self, text: str):
+        """Generate embedding for given text using SentenceTransformer."""
+        return self.model.encode(text).tolist()
 
-        chunks = splitter.split_text(content)
-        print(f"📄 Splitting {file_path.name} into {len(chunks)} chunks...")
+    # --- Ingestion ---
+    def ingest_folder(self, folder_path: str = "data/notes"):
+        """Read all .txt files, split into chunks, and store them in ChromaDB."""
+        folder = Path(folder_path)
+        if not folder.exists():
+            raise FileNotFoundError(f"Folder not found: {folder_path}")
 
-        for i, chunk in enumerate(chunks):
-            doc_id = f"{file_path.stem}_{i}"
-            embedding = embed_text(chunk)
+        for file_path in folder.glob("*.txt"):
+            with open(file_path, "r", encoding="utf-8") as f:
+                content = f.read()
 
-            collection.add(
-                ids=[doc_id],
-                embeddings=[embedding],
-                documents=[chunk],
-                metadatas=[{
-                    "filename": file_path.name,
-                    "chunk_index": i
-                }],
-            )
+            chunks = self.text_splitter.split_text(content)
+            print(f"📄 Splitting {file_path.name} into {len(chunks)} chunks...")
 
-        print(f"✅ Ingested {file_path.name} ({len(chunks)} chunks)")
+            for i, chunk in enumerate(chunks):
+                doc_id = f"{file_path.stem}_{i}"
+                embedding = self.embed_text(chunk)
 
-# --- Reset collection ---
-def reset_collection():
-    """Deletes the ChromaDB collection for a clean start."""
-    try:
-        client.delete_collection("notes")
-        print("🧹 Collection 'notes' deleted successfully.")
-    except Exception as e:
-        print(f"⚠️ No existing collection found or error deleting: {e}")
+                self.collection.add(
+                    ids=[doc_id],
+                    embeddings=[embedding],
+                    documents=[chunk],
+                    metadatas=[{
+                        "filename": file_path.name,
+                        "chunk_index": i
+                    }],
+                )
 
-# --- Query logic ---
-def query_notes(query: str, n_results: int = 3):
-    query_embedding = embed_text(query)
+            print(f"✅ Ingested {file_path.name} ({len(chunks)} chunks)")
 
-    results = collection.query(
-        query_embeddings=[query_embedding],
-        n_results=n_results
-    )
+    # --- Reset ---
+    def reset_collection(self):
+        """Deletes the ChromaDB collection for a clean start."""
+        try:
+            self.client.delete_collection(self.collection.name)
+            print(f"🧹 Collection '{self.collection.name}' deleted successfully.")
+        except Exception as e:
+            print(f"⚠️ Could not delete collection: {e}")
 
-    docs = results.get("documents", [[]])[0]
-    metas = results.get("metadatas", [[]])[0]
+    # --- Query ---
+    def query_notes(self, query: str, n_results: int = 3):
+        """Search for relevant chunks."""
+        query_embedding = self.embed_text(query)
 
-    if not docs:
-        print("❌ No matching results found.")
-        return
+        results = self.collection.query(
+            query_embeddings=[query_embedding],
+            n_results=n_results
+        )
 
-    seen = set()
-    for doc, meta in zip(docs, metas):
-        key = f"{meta['filename']}_{meta['chunk_index']}"
-        if key in seen:
-            continue
-        seen.add(key)
+        docs = results.get("documents", [[]])[0]
+        metas = results.get("metadatas", [[]])[0]
 
-        print(f"\n📘 {meta['filename']}:")
-        print(doc[:400] + "\n---")
+        if not docs:
+            print("❌ No matching results found.")
+            return None
 
-    return results
+        seen = set()
+        for doc, meta in zip(docs, metas):
+            key = f"{meta['filename']}_{meta['chunk_index']}"
+            if key in seen:
+                continue
+            seen.add(key)
+            print(f"\n📘 {meta['filename']}:\n{doc[:400]}\n---")
 
+        return results
 
-# --- RAG retrieval ---
-def rag_retrieve(query: str, n_results: int = 3) -> str:
-    """
-    Retrieve top-n relevant chunks from ChromaDB and prepare a clean context block
-    for use in RAG pipelines (Retrieval-Augmented Generation).
-    """
-    query_embedding = embed_text(query)
+    # --- RAG Retrieval ---
+    def rag_retrieve(self, query: str, n_results: int = 3) -> str:
+        """
+        Retrieve top-n relevant chunks and return a clean RAG context block.
+        """
+        query_embedding = self.embed_text(query)
 
-    results = collection.query(
-        query_embeddings=[query_embedding],
-        n_results=n_results
-    )
+        results = self.collection.query(
+            query_embeddings=[query_embedding],
+            n_results=n_results
+        )
 
-    if not results["documents"] or not results["documents"][0]:
-        return "No relevant information found in your knowledge base."
+        if not results["documents"] or not results["documents"][0]:
+            return "No relevant information found in your knowledge base."
 
-    # Combine retrieved documents into a readable context string
-    context_blocks = []
-    for doc, meta in zip(results["documents"][0], results["metadatas"][0]):
-        filename = meta.get("filename", "Unknown file")
-        chunk_info = f"[Source: {filename}]"
-        context_blocks.append(f"{chunk_info}\n{doc.strip()}\n")
+        context_blocks = []
+        for doc, meta in zip(results["documents"][0], results["metadatas"][0]):
+            filename = meta.get("filename", "Unknown file")
+            chunk_info = f"[Source: {filename}]"
+            context_blocks.append(f"{chunk_info}\n{doc.strip()}\n")
 
-    context = "\n---\n".join(context_blocks)
-
-    final_context = f"""Here are some relevant notes from your knowledge base:
-    
-                    {context}
-                    """
-
-    return final_context
-
+        context = "\n---\n".join(context_blocks)
+        return f"Here are some relevant notes from your knowledge base:\n\n{context}\n"
