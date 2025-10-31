@@ -1,3 +1,9 @@
+from second_brain.utils import setup_otel
+
+# Initialize OpenTelemetry and logfire instrumentation (must be before other imports)
+setup_otel()
+
+# Import after OTEL/logfire setup to ensure instrumentation works
 from second_brain.agents.ingestor import RAGManager
 from second_brain.agents.thought_agent import ThoughtAgent
 
