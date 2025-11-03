@@ -160,6 +160,7 @@ second_brain/
 
 - `LLM_MODEL`: LLM model identifier (default: `google-gla:gemini-2.5-pro`)
 - `GUARDRAILS_ENABLED`: Enable/disable PII protection (default: `true`)
+- `GEMINI_API_KEY`: API Key for LLM model
 
 ### Data Storage
 
